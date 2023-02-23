@@ -1,0 +1,38 @@
+<!doctype html>
+<div id="hint"></div>
+<div id="graph0" class="graph-container"></div>
+
+
+<script src="../svg_line_graph.js"></script>
+<script>
+
+const series = [{name:'foo bar baz', values:[1,2,3,5,3,0,null,null,null,null,null]}];
+
+document.getElementById('graph0').innerHTML = svg_line_graph({
+    width: 800,
+    height: 400, 
+    series: series, 
+    xlabels: [1,2,3,4,5],
+    margins: [20,20,30,50],
+    hint: {'dynamic':'show_hint'},
+    legend: [500,0,250,40], legend_vertical: true,
+    marker: 8,
+    unit: '%',
+    custom: '<defs><linearGradient id="myGradient" gradientTransform="rotate(90)"><stop offset="0%" stop-color="#0f0"/><stop offset="100%" stop-color="#000"/></linearGradient></defs>'
+ });
+
+window.show_hint = function(si,vi) {
+  console.debug(si,vi,event);
+  let s = series[si];
+  let v = s.values[vi];
+  document.getElementById('hint').innerText = `si=${si} vi=${vi} ${s.name} = ${v}`;
+};
+</script>
+<style>
+  .graph-container { width: 800px; height:400px; border:2px solid green; background-color:#4a4; font: 20pt Unispace; }
+  svg.graph .legend rect { fill:#050; }
+  svg.graph .series-0 { stroke:#0f0; fill:#090; }
+  svg.graph .series-0 .marker circle { stroke:#0f0; fill:url(#myGradient); }
+  svg.graph .legend .series-0 circle { stroke:#0f0; fill:url(#myGradient); }
+  #hint { background-color:yellow; height:20px; width:800px; }
+</style>

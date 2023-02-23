@@ -1,0 +1,8 @@
+<div id="graph-container" style="width:800px; height:400px;"></div>
+<script src="../svg_line_graph.js"></script>
+<script>
+document.getElementById('graph-container').innerHTML = svg_line_graph({
+    series: [{name:'foo', color:'#f00', values:[1,2,4,5,3,0]}],
+    xlabels: [0,1,2,3,5,6] 
+  });
+</script>

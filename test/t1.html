@@ -1,0 +1,39 @@
+<!doctype html>
+<style>
+.graph-container { width: 800px; height:150px; border:2px solid green; font-family: Arial; font-size: 10pt; }
+</style>
+
+<div id="graph0" class="graph-container"></div>
+<div id="graph1" class="graph-container"></div>
+<div id="graph2" class="graph-container"></div>
+<div id="graph3" class="graph-container"></div>
+<div id="graph4" class="graph-container"></div>
+
+<script src="../svg_line_graph.js"></script>
+<script>
+
+const gr = [  
+  [1,2,3,5,3,0,null,null,null,null,null,null,null,null,null,null],
+  [0,5,8,9,8,4,null,null,null,null,null,null,null,null,null,null],
+  [5.1,5.2,5.1,undefined,5.2,null,5.0,5.2],
+  [81,99,105,111,100],
+  [-12,-2,0,20,20],
+];
+
+for (const [i,v] of gr.entries()) {
+  const series = [
+    {name:'foo', color:'#00f', values:v},
+  ];
+  const div = document.getElementById('graph'+i);
+  div.innerHTML = svg_line_graph({
+    width: div.clientWidth, height: div.clientHeight,
+    series:series, 
+    xlabels:['00:00','04:00','08:00','12:00','16:00'], 
+    legend:undefined,
+    marker:2,
+    margins:[40,20,20,50],
+    hint: {'static': (si,vi) => `si=${si} vi=${vi}`},
+  });
+}
+
+</script>
