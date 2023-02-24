@@ -8,13 +8,12 @@
 
 ## Использование
 
-Скрипт создаёт глобальную функцию svg_line_graph.
+Функция svg_line_graph формирует SVG в виде строки, которую можно вставить в HTML-документ.
 
-Функция формирует SVG в виде строки.
-Строку можно вставить в HTML-документ:
+либо загрузив функцию как глобальную:
 ```
 <div id="graph-container" style="width:800px; height:400px;"></div>
-<script src="../svg_line_graph.js"><script>
+<script src="path/svg_line_graph.js"><script>
 <script>
 document.getElementById('graph-container').innerHTML = svg_line_graph({
     series: [{name:'foo', color:'#f00', values:[1,2,4,5,3,0]}],
@@ -22,7 +21,7 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
   });
 </script>
 ```
-или
+либо загрузив JS-модуль:
 ```
 <div id="graph-container" style="width:800px; height:400px;"></div>
 <script type="module">
@@ -51,7 +50,7 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | ymin        | | Number          | min(values)       | минимальное отображаемое значение по оси Y 
 | ymax        | | Number          | max(values)       | максимальное отображаемое значение по оси Y
 | yunit       | | String          | ""                | единица измерения на оси Y, общая для всех серий
-| xlabels     | | Array[String]   | []                | подписи оси X включая начало и конец диапазона, задают вертикальную сетку
+| xlabels     | | Array[String/Number] | []           | подписи оси X включая начало и конец диапазона, задают вертикальную сетку
 | marker      | | Number          | 0                 | радиус маркера для точки на графике
 | custom      | | String          | ""                | произвольный текст вставляемый в начало SVG: элементы SVG, скрипты или стили
 | hint        | | Object{String:*}| undefined         | подсказка для точки графика, см. ниже
