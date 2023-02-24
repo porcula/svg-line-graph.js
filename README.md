@@ -4,11 +4,11 @@
 ## Требования
 Браузер с поддержкой ECMAScript 2018 и SVG 1.1
 
+Для минификации и тестирования - node.js 18+ (опционально)
+
 ## Использование
 
 Скрипт создаёт глобальную функцию svg_line_graph.
-
-ES6-модуль для простоты не используется.
 
 Функция формирует SVG в виде строки.
 Строку можно вставить в HTML-документ:
@@ -22,9 +22,17 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
   });
 </script>
 ```
-Ширина/высота/фон/шрифт определяются стилем HTML-элемента, куда будет вставлен SVG.
-
-Параметры отображения всех элементов графика задаются встроенными стилями и могут быть переопределены через CSS.
+или
+```
+<div id="graph-container" style="width:800px; height:400px;"></div>
+<script type="module">
+import {svg_line_graph} from 'path/svg_line_graph.mod.js';
+document.getElementById('graph-container').innerHTML = svg_line_graph({
+    series: [{name:'foo', color:'#f00', values:[1,2,4,5,3,0]}],
+    xlabels: [0,1,2,3,5,6] 
+  });
+</script>
+```
 
 ## Параметры
 
@@ -47,6 +55,12 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | marker      | | Number          | 0                 | радиус маркера для точки на графике
 | custom      | | String          | ""                | произвольный текст вставляемый в начало SVG: элементы SVG, скрипты или стили
 | hint        | | Object{String:*}| undefined         | подсказка для точки графика, см. ниже
+
+Параметры width и height задают относительные размеры графика.
+
+Итоговая ширина/высота определяются стилем HTML-элемента, куда будет вставлен SVG.
+
+Параметры отображения всех элементов графика задаются встроенными стилями и могут быть переопределены через CSS.
 
 ## Подсказка для точки графика
 
