@@ -10,8 +10,8 @@
 
 Функция svg_line_graph формирует SVG в виде строки, которую можно вставить в HTML-документ.
 
-либо загрузив функцию как глобальную:
-```
+либо загрузив глобальную функцию:
+``` js
 <div id="graph-container" style="width:800px; height:400px;"></div>
 <script src="path/svg_line_graph.js"><script>
 <script>
@@ -22,7 +22,7 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 </script>
 ```
 либо загрузив JS-модуль:
-```
+``` js
 <div id="graph-container" style="width:800px; height:400px;"></div>
 <script type="module">
 import {svg_line_graph} from 'path/svg_line_graph.mod.js';
@@ -37,14 +37,14 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 
 | имя         | | тип             | по умолчанию      | описание
 | ------------|-|-----------------|-------------------|--------------------------------------------------------------------------
-| **series**  | | Array[{}]       |                   | данные и метаданные рядов (линий)
-| | values    |   [Number]        |                   | значения по оси Y, значения null|undefined не рисуются
+| **series**  | | Array[Object]   |                   | данные и метаданные рядов (линий)
+| | values    |   [Number]        |                   | значения по оси Y, значения null и undefined не рисуются
 | | color     |   String          | набор из 9 цветов | цвет линии: имя / #hex / rgb() / rgba()
 | | name      |   String          | ""                | подпись ряда в легенде
 | id          | | String          | 'svg_line_graph'  | идентификатор генерируемого элемента SVG
 | width       | | Number          | 800               | ширина графика с отступами, px
 | height      | | Number          | 400               | высота графика с отступами, px
-| margins     | | Array[Number]   | [40,10,20,50]     | отступы [сверху, справа, снизу (подписи оси X), слева (подписи оси Y)]
+| margins     | | Array[Number]   | [40,10,20,50]     | отступы [сверху - легенда, справа, снизу - подписи оси X, слева - подписи оси Y]
 | legend      | | Array[Number]   | [50,0,100,20]     | положение и размер легенды [x,y,line-width,line-height]
 | legend_vertical | | Bool        | false             | расположение элементов легенды
 | ymin        | | Number          | min(values)       | минимальное отображаемое значение по оси Y 
@@ -54,8 +54,10 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | marker      | | Number          | 0                 | радиус маркера для точки на графике
 | custom      | | String          | ""                | произвольный текст вставляемый в начало SVG: элементы SVG, скрипты или стили
 | hint        | | Object{String:*}| undefined         | подсказка для точки графика, см. ниже
+| hint_r      | | Number          | 5% высоты         | радиус круга для появления подсказки
 
 Параметры width и height задают относительные размеры графика.
+Все размеры задаются в данном масштабе.
 
 Итоговая ширина/высота определяются стилем HTML-элемента, куда будет вставлен SVG.
 
@@ -89,13 +91,13 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
       * path - ось Y (0)
       * text - подписи оси Y
     * g.line.series-#
-      * path - линия
+      * path - линия графика
       * g.marker
-        * circle - маркер
+        * circle - маркеры точек графика
       * g.hint
         * circle - область наведения курсора для подсказки
     * g.legend - обозначение рядов
       * rect - граница
-      * g.series-#
+      * g.marker.series-#
         * circle
         * text - имя ряда

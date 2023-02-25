@@ -27,6 +27,7 @@ function svg_line_graph(args) {
     xlabels: [],
     marker: 0,
     hint: undefined,
+    hint_r: undefined, //calculated
     custom: "",
     colors: ['#f00','#0f0','#44f', '#dd0','#0dd','#f4f', '#800','#080','#008', '#880','#088','#808'],
   };
@@ -62,7 +63,7 @@ function svg_line_graph(args) {
   const xzero = xL; //Y-axis always on left
   const yzero = (yB-yT)*vmax/(vmax-vmin) + yT;  //can be out of view
   const yaxis = (vmin<=0 && vmax>=0) ? yzero : undefined;  //draw X-axis at Y=0
-  const hint_r = Math.ceil(Math.min(xwidth,yheight)*0.05); //invisible marker radius
+  const hint_r = a.hint_r ?? Math.ceil(Math.min(xwidth,yheight)*0.05); //invisible circle radius
 //console.debug(' ymin',ymin,'ymax',ymax,'vstep',vstep,'ysteps',ysteps,'vmin',vmin,'vmax',vmax,'xfactor',xfactor,'yfactor',yfactor,'yzero',yzero,'yaxis',yaxis,'ydigits',ydigits);
   const yformat = new Intl.NumberFormat(undefined,{maximumFractionDigits:ydigits}); //current locale for decimal/thousands separator
   const rnd = (x) => +x.toFixed(3); //shorter SVG, less precision
@@ -156,9 +157,9 @@ function svg_line_graph(args) {
     let y = y0;
     let legend = '';
     for (const [si,s] of Object.entries(a.series)) {
-      legend += `<g class="series-${si}" clip-path="polygon(${-cx} 0, ${w-cx} 0, ${w-cx} ${h}, ${-cx} ${h})" onclick="event.stopPropagation(); this.parentElement.parentElement.querySelectorAll('.series-${si}').forEach((i)=>i.classList.toggle('selected'))">`;
+      legend += `<g class="series-${si} marker" clip-path="polygon(${-cx} 0, ${w-cx} 0, ${w-cx} ${h}, ${-cx} ${h})" onclick="event.stopPropagation(); this.parentElement.parentElement.querySelectorAll('.series-${si}').forEach((i)=>i.classList.toggle('selected'))">`;
       legend += `<circle cx="${x+cx}" cy="${y+dy}" r="${cr}"/>`;
-      legend += `<text x="${x+tx}" y="${y+dy}">${s.name}<title>${s.name}</title></text>`;
+      legend += `<text x="${x+tx}" y="${y+dy}"><title>${s.name}</title>${s.name}</text>`;
       legend += '</g>';
       if (a.legend_vertical) {
         y += h;
