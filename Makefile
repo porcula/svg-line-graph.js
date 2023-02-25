@@ -23,6 +23,10 @@ clean:
 
 test: check
 	node test/node-open.js test/t0.html
+	node test/node-open.js test/t1.html
+	node test/node-open.js test/t2.html
+	node test/node-open.js test/t3.html
+	node test/node-open.js test/t4.html
 
 test-module: svg_line_graph.mod.js
 	static -p 8080 &
