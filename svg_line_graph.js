@@ -9,9 +9,9 @@ function svg_line_graph(args) {
   svg.graph .line.selected text { font-weight:bold; }\
   svg.graph .marker circle { }\
   svg.graph .hint circle { fill:transparent; stroke:none; cursor:pointer; }\
+  svg.graph .legend { cursor:pointer; }\
   svg.graph .legend.collapsed { transform:scale(0.2); }\
   svg.graph .legend rect { fill:rgba(255,255,255,0.9); stroke:#aaa; stroke-width:1; }\
-  svg.graph .legend .line { cursor:pointer; }\
   svg.graph .legend text { stroke:none; text-anchor:start; dominant-baseline:middle; }';
   
   const defaults = {
@@ -52,10 +52,14 @@ function svg_line_graph(args) {
     ymax ??= tmax;
   }
   const eps = 0.01*(ymax-ymin); //1% of range
-  const vstep = Math.pow(10, Math.ceil(Math.log10((Math.abs(ymax-ymin-eps)))-1)); //rounded 10-base
+  let vstep = Math.pow(10, Math.ceil(Math.log10((Math.abs(ymax-ymin-eps)))-1)); //rounded 10-base
   const vmin = Math.floor(ymin/vstep)*vstep; //bottom, src units
   const vmax = Math.ceil(ymax/vstep)*vstep;  //top, src units
-  const ysteps = Math.ceil((vmax-vmin)/vstep); //Y label and grid count
+  let ysteps = Math.ceil((vmax-vmin)/vstep); //Y label and grid count, 10 max
+  if (ysteps<5) {
+    vstep /= 2;
+    ysteps *= 2;
+  }
   const ystep  = yheight/ysteps; //grid height
   const ydigits = Math.max(0, Math.ceil(-Math.log10(vstep)));
   const xfactor = xwidth/(xcount-1);
