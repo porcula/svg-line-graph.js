@@ -29,7 +29,7 @@ function svg_line_graph(args) {
     hint: undefined,
     hint_r: undefined, //calculated
     custom: "",
-    colors: ['#f00','#0f0','#44f', '#dd0','#0dd','#f4f', '#800','#080','#008', '#880','#088','#808'],
+    colors: ['#f00','#0d0','#44f', '#dd0','#0dd','#f4f', '#800','#080','#008', '#880','#088','#808'],
   };
   const a = {...defaults, ...args};
   const xL = a.margins[3], xR = a.width-a.margins[1], yT = a.margins[0], yB = a.height-a.margins[2];
