@@ -5,22 +5,27 @@ function svg_line_graph(args) {
   svg.graph .xaxis text { fill:#000; text-anchor:middle; dominant-baseline:hanging; }\
   svg.graph .yaxis text { fill:#000; text-anchor:end; dominant-baseline:middle; }\
   svg.graph .line path { fill:transparent; stroke-width:3; shape-rendering:geometricPrecision; }\
-  svg.graph .line.selected path { stroke-width:6; }\
-  svg.graph .line.selected text { font-weight:bold; }\
+  svg.graph .line.highlight path { stroke-width:6; }\
+  svg.graph .legend .highlight { font-weight:bold; }\
+  svg.graph .line.shadow path, svg.graph .line.shadow circle { stroke-opacity:0.1; fill:transparent; }\
+  svg.graph .line.shadow .hint { display:none; }\
   svg.graph .marker circle { }\
-  svg.graph .hint circle { fill:transparent; stroke:none; cursor:pointer; }\
-  svg.graph .legend { cursor:pointer; }\
-  svg.graph .legend.collapsed { transform:scale(0.2); }\
+  svg.graph .hint circle { fill:transparent; stroke:none; cursor:crosshair; }\
+  svg.graph .line circle:hover { stroke:#fff; }\
+  svg.graph .legend .marker { cursor:pointer; }\
+  svg.graph .legend.hidden { display:none; }\
   svg.graph .legend rect { fill:rgba(255,255,255,0.9); stroke:#aaa; stroke-width:1; }\
-  svg.graph .legend text { stroke:none; text-anchor:start; dominant-baseline:middle; }';
+  svg.graph .legend text { stroke:none; text-anchor:start; dominant-baseline:middle; }\
+  svg.graph .legend .shadow circle, svg.graph .legend .shadow text { stroke-opacity:0.3; fill-opacity:0.3; }\
+  svg.graph .toggle_legend { fill:rgba(0,0,0,0.05); stroke:transparent; }\
+  ';
   
   const defaults = {
     id: "svg_line_graph",
     width: 800,
     height: 400,
     margins: [40,10,20,50],
-    legend: [50,0,100,20],
-    legend_vertical: false,
+    legend: { x:50, y:0, w:100, h:20, vertical:false, grow:false },
     ymin: undefined,
     ymax: undefined,
     yunit: '',
@@ -67,8 +72,7 @@ function svg_line_graph(args) {
   const xzero = xL; //Y-axis always on left
   const yzero = (yB-yT)*vmax/(vmax-vmin) + yT;  //can be out of view
   const yaxis = (vmin<=0 && vmax>=0) ? yzero : undefined;  //draw X-axis at Y=0
-  const hint_r = a.hint_r ?? Math.ceil(Math.min(xwidth,yheight)*0.05); //invisible circle radius
-//console.debug(' ymin',ymin,'ymax',ymax,'vstep',vstep,'ysteps',ysteps,'vmin',vmin,'vmax',vmax,'xfactor',xfactor,'yfactor',yfactor,'yzero',yzero,'yaxis',yaxis,'ydigits',ydigits);
+  const hint_r = a.hint_r ?? Math.max(3,Math.ceil(Math.min(xwidth,yheight)*0.03)); //invisible circle radius
   const yformat = new Intl.NumberFormat(undefined,{maximumFractionDigits:ydigits}); //current locale for decimal/thousands separator
   const rnd = (x) => +x.toFixed(3); //shorter SVG, less precision
   let style = default_style;
@@ -146,41 +150,51 @@ function svg_line_graph(args) {
       }
       prev_def = def;
     }
-    svg += `<g class="line series-${si}"><path d="${path}"/>\n`;
+    svg += `<g class="line normal series-${si}"><path d="${path}"/>\n`;
     if (mark) svg += `<g class="marker">${mark}</g>\n`;
     if (hint) svg += `<g class="hint">${hint}</g>\n`;
     svg += '</g>';
   } // series
+
   if (a.legend) {
-    const [x0,y0,w,h] = a.legend;
-    const cr = h*0.3;
-    const cx = h*0.7;
-    const tx = h*1.3;
-    const dy = h*0.9;
-    let x = x0;
-    let y = y0;
     let legend = '';
-    for (const [si,s] of Object.entries(a.series)) {
-      legend += `<g class="series-${si} marker" clip-path="polygon(${-cx} 0, ${w-cx} 0, ${w-cx} ${h}, ${-cx} ${h})" onclick="event.stopPropagation(); this.parentElement.parentElement.querySelectorAll('.series-${si}').forEach((i)=>i.classList.toggle('selected'))">`;
+    const [x0,y0,w,h] = [a.legend.x, a.legend.y, a.legend.w, a.legend.h];
+    const cr = h*0.3, cx = h*0.7, tx = h*1.3, dy = h*0.9;
+    let x=0, y=0, mx=0, my=0;
+    const limx = xR-h*1.0-x0, limy = yB-h*1.7-y0;
+    const last_si = a.series.length-1;
+    for (const [si,s] of a.series.entries()) {
+      const jscode = `event.stopPropagation();\
+ this.parentElement.parentElement.querySelectorAll('.series-${si}').forEach((i)=>{\
+ const c = i.classList; c.replace('normal','highlight')||c.replace('highlight','shadow')||c.replace('shadow','normal');\
+})`;
+      legend += `<g class="series-${si} normal marker" clip-path="polygon(${-cx} 0, ${w-cx} 0, ${w-cx} ${h}, ${-cx} ${h})" onclick="${jscode}">`;
       legend += `<circle cx="${x+cx}" cy="${y+dy}" r="${cr}"/>`;
       legend += `<text x="${x+tx}" y="${y+dy}"><title>${s.name}</title>${s.name}</text>`;
       legend += '</g>';
-      if (a.legend_vertical) {
-        y += h;
-      } else {
-        x += w;
+      if (si<last_si) {
+        if (a.legend.vertical) {
+          y += h;
+          if (a.legend.grow && (y+h)>limy) { 
+            x += w; y = 0; 
+          }
+        } else {
+          x += w;
+          if (a.legend.grow && (x+w)>limx) { 
+            x = 0; y += h; 
+          }
+        }
       }
+      mx = Math.max(mx, x); 
+      my = Math.max(my, y); 
     }
-    if (a.legend_vertical) {
-      x += w;
-      y += h*0.7;
-    } else {
-      x += h*1.0;
-      y += h*1.7;
-    }
-    svg += `<g class="legend" onclick="this.classList.toggle('collapsed')">`;
-    svg += `<rect x="${x0}" y="${y0}" width="${x-x0}" height="${y-y0}" rx="${h*0.2}"/>`; // rx still not stylable in Firefox
-    svg += legend +'</g>\n';
+    const [lw, lh] = a.legend.vertical 
+      ? [ mx+w, my+h*1.7 ]
+      : [ mx+w+h*1.0, my+h*1.7 ];
+    let [ox,oy] = [x0,y0];
+    //if (a.legend.grow && ((x0+lw+h)>a.width)) ox = a.width-lw-h;
+    svg += `<g class="legend" transform="translate(${ox},${oy})"><rect x="0" y="0" width="${lw}" height="${lh}" rx="${h*0.2}"/>${legend}</g>`;
+    svg += `<rect class="toggle_legend" x="${a.width-h}" y="0" width="${h}" height="${h}" onclick="this.parentElement.querySelector('.legend').classList.toggle('hidden')"/>\n`;
   }
   svg += '</svg>';
   return svg;

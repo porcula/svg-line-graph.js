@@ -17,7 +17,7 @@ document.getElementById('graph0').innerHTML = svg_line_graph({
     series: series, 
     xlabels: ['Янв','Фев','Мар','Апр','Май'],
     margins: [20,20,60,50],
-    legend: [500,0,250,40], legend_vertical: true,
+    legend: { x:500,y:0,w:200,h:40,vertical:false },
     hint: {'dynamic':'show_hint'},
     marker: 8, hint_r: 10,
     unit: '%',

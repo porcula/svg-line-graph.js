@@ -1,7 +1,7 @@
 <!doctype html>
 <style>
 svg {border:1px solid red; font-family: Arial; font-size: 10pt; }
-.graph-container { width: 800px; height:400px; border:2px solid green; }
+.graph-container { width: 800px; height:200px; border:2px solid green; }
 #hint { background-color:yellow; height:20px; }
 tspan.bold { font-weight:bold; fill:#055; color:#800; }
 title { font-size:12pt; background-color:#ff0; }
@@ -19,13 +19,22 @@ const series = [
     {name:'очень-очень длинное имя', values:[5.1,5.2,5.1,5.2,5.0,5.2] },
     {name:'фыва', values:[50,25,25,50,50,100,75,75,50,0,100,100,100]},
     {name:'The <tspan class="bold">lazy</tspan> fox', values:[100,99,80,0], factor:4},
+    {name:'a', values:[10,10,10]},
+    {name:'b', values:[20,20,20]},
+    {name:'c', values:[30,30,30]},
+    {name:'d', values:[40,40,40]},
+    {name:'e', values:[50,50,50]},
+    {name:'f', values:[60,60,60]},
+    {name:'go go go go go go go', values:[70,70,70]},
   ];
 const xvalues = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16'];
 
 document.getElementById('graph0').innerHTML = svg_line_graph({
+    width:800, height:200,
     series:series, 
     xlabels:['00:00','04:00','08:00','12:00','16:00'], 
-    legend_vertical: true,
+    margins:[10,10,20,50],
+    legend: {x:550,y:0,w:120,h:20, vertical: true, grow: true},
     marker: 3,
     unit: '%',
   });
