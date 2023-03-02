@@ -77,7 +77,7 @@ function svg_line_graph(args) {
   const rnd = (x) => +x.toFixed(3); //shorter SVG, less precision
   let style = default_style;
   for (const [si,s] of a.series.entries()) {
-    const color = s.color ?? a.colors[si];
+    const color = s.color ?? a.colors[si] ?? '#000';
     style += `svg.graph .series-${si} { fill:${color}; stroke:${color} }`;
   }
   let svg = `<svg id="${a.id}" class="graph" version="1.1" viewBox="0 0 ${a.width} ${a.height}" xmlns="http://www.w3.org/2000/svg"><style>${style}</style>\n${a.custom}`;
