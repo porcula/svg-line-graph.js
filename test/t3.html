@@ -33,9 +33,10 @@ document.getElementById('graph0').innerHTML = svg_line_graph({
     width:800, height:200,
     series:series, 
     xlabels:['00:00','04:00','08:00','12:00','16:00'], 
+    yticks: 20,
     margins:[10,10,20,50],
     legend: {x:550,y:0,w:120,h:20, vertical: true, grow: true},
-    marker: 3,
+    marker: 1,
     unit: '%',
   });
 

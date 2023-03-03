@@ -16,7 +16,7 @@
 <script src="path/svg_line_graph.js"><script>
 <script>
 document.getElementById('graph-container').innerHTML = svg_line_graph({
-    series: [{name:'foo', color:'#f00', values:[1,2,4,5,3,0]}],
+    series: [{values:[1,2,4,5,3,0]}],
     xlabels: [0,1,2,3,5,6,7] 
   });
 </script>
@@ -27,15 +27,15 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 <script type="module">
 import {svg_line_graph} from 'path/svg_line_graph.mod.js';
 document.getElementById('graph-container').innerHTML = svg_line_graph({
-    series: [{name:'foo', color:'#f00', values:[1,2,4,5,3,0]}],
+    series: [{values:[1,2,4,5,3,0]}],
     xlabels: [0,1,2,3,5,6] 
   });
 </script>
 ```
 
-Сгенерированный SVG содержит встроенный JavaScript:
-  - выделение/скрытие ряда при клике на легенде
-  - скрытие легенды
+Сгенерированный SVG содержит JavaScript для:
+  - скрытия/показа легенды
+  - выделения/скрытия ряда при клике на легенде
 
 ## Параметры
 
@@ -43,25 +43,27 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | ------------|-|-----------------|--------------------|--------------------------------------------------------------------------
 | **series**  | | Array[Object]   |                    | данные и метаданные рядов (линий)
 | | values    |   [Number]        |                    | значения по оси Y, значения null и undefined не рисуются
-| | color     |   String          | набор из 12 цветов | цвет линии: имя / #hex / rgb() / rgba()
 | | name      |   String          | ""                 | подпись ряда в легенде
+| | color     |   String          | набор из 12 цветов | цвет линии: имя / #hex / rgb() / rgba()
+| | marker    |   Number/String   | undefined          | маркер точки: относительный радиус окружности или идентификатор пользовательского маркера определёного в custom defs
 | id          | | String          | 'svg_line_graph'   | идентификатор генерируемого элемента SVG
-| width       | | Number          | 800                | ширина графика с отступами, px
-| height      | | Number          | 400                | высота графика с отступами, px
+| width       | | Number          | 800                | относительная ширина графика с отступами
+| height      | | Number          | 400                | относительная высота графика с отступами
+| ymin        | | Number          | min(values)        | минимальное отображаемое значение по оси Y 
+| ymax        | | Number          | max(values)        | максимальное отображаемое значение по оси Y
+| yticks      | | Number          | 10                 | максимальное число делений по оси Y
+| yunit       | | String          | ""                 | подпись единицы измерения на оси Y, общая для всех серий
+| xlabels     | | Array[String/Number] | []            | подписи оси X включая начало и конец диапазона, задают вертикальную сетку
 | margins     | | Array[Number]   | [40,10,20,50]      | отступы [сверху - легенда, справа, снизу - подписи оси X, слева - подписи оси Y]
-| legend      | | Object{}        |                    | положение и размеры легенды, undefined=не отображать
+| legend      | | Object{}        | undefined          | положение и размеры легенды, undefined=не отображать
 |  | x        |   Number          | 50                 | отступ слева
 |  | y        |   Number          | 0                  | отступ сверху
 |  | w        |   Number          | 100                | ширина элемента
 |  | h        |   Number          | 20                 | высота элемента, неявно определяет все остальные размеры
 |  | vertical |   Bool            | false              | вертикальное расположение элементов
 |  | grow     |   Bool            | false              | автоматическое увеличение числа строк/столбцов
-| ymin        | | Number          | min(values)        | минимальное отображаемое значение по оси Y 
-| ymax        | | Number          | max(values)        | максимальное отображаемое значение по оси Y
-| yunit       | | String          | ""                 | единица измерения на оси Y, общая для всех серий
-| xlabels     | | Array[String/Number] | []            | подписи оси X включая начало и конец диапазона, задают вертикальную сетку
-| marker      | | Number          | 0                  | радиус маркера для точки на графике
-| custom      | | String          | ""                 | произвольный текст вставляемый в начало SVG: элементы SVG, скрипты или стили
+| marker      | | Number/String   | undefined          | маркер точек по умолчанию, аналогично series[].marker
+| custom      | | String          | ""                 | произвольный текст вставляемый в начало SVG: элементы SVG, скрипты, стили
 | hint        | | Object{String:*}| undefined          | подсказка для точки графика, см. ниже
 | hint_r      | | Number          | 5% высоты          | радиус круга для появления подсказки
 
@@ -70,7 +72,9 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 
 Итоговая ширина/высота определяются стилем HTML-элемента, куда будет вставлен SVG.
 
-Параметры отображения всех элементов графика задаются встроенными стилями и могут быть переопределены через CSS.
+Параметры отображения почти всех элементов графика задаются встроенными стилями и могут быть переопределены через CSS.
+
+Размер маркера зависит от толщины линии, стиль по умолчанию задаёт толщину 3, то есть marker=1 означает радиус 3.
 
 ## Подсказка для точки графика
 
@@ -93,20 +97,18 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 ``Тэг.класс``
   * svg.graph
     * path.grid - сетка
-    * g.xaxis
-      * path - ось X
-      * text - подписи оси X
-    * g.yaxis
-      * path - ось Y (0)
-      * text - подписи оси Y
-    * g.line.series-#[.normal|.highlight|.shadow]
-      * path - линия графика
-      * g.marker
-        * circle - маркеры точек графика
-      * g.hint
-        * circle - область наведения курсора для подсказки
+    * g.xaxis - ось X
+      * path - линия
+      * text - подписи
+    * g.yaxis - ось Y
+      * path - линия
+      * text - подписи
+    * path.line.series#[.normal|.highlight|.shadow] - линия графика
+    * g.hint.series#
+      * circle - область наведения курсора для подсказки + псевдокласс :hover
     * g.legend - обозначение рядов
-      * rect - граница
-      * g.marker.series-#[.normal|.highlight|.shadow]
-        * circle
-        * text - имя ряда
+      * rect.legend.background - граница
+      * g.legend.series#.item[.normal|.highlight|.shadow]
+        * path.legend.series#.marker - образец маркера, круг по умолчанию
+        * text.legend.series#.text - имя ряда
+    * rect.legend.toggle - кнопка для показа/скрытия легенды    

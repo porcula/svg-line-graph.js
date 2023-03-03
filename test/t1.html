@@ -29,11 +29,11 @@ for (const [i,v] of gr.entries()) {
   const div = document.getElementById('graph'+i);
   div.innerHTML = svg_line_graph({
     width: div.clientWidth, height: div.clientHeight,
+    yticks: 5,
     series:series, 
     xlabels:['00:00','04:00','08:00','12:00','16:00'], 
-    legend:undefined,
-    marker:2,
-    margins:[40,20,20,50],
+    marker:1,
+    margins:[10,20,20,50],
     hint: {'static': (si,vi) => `si=${si} vi=${vi} v=${series[si].values[vi]}`},
   });
 }
