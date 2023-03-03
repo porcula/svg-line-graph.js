@@ -60,11 +60,15 @@ function svg_line_graph(args) {
     ymin ??= tmin;
     ymax ??= tmax;
   }
+  if ((ymax-ymin)<1e-6) {
+    if (ymax==0.0) { ymax=1.0; }
+    else { ymax = ymax*1.09; ymin = ymax*0.90; }
+  }
   const eps = 0.01*(ymax-ymin); //1% of range
-  let vstep = Math.pow(10, Math.ceil(Math.log10((Math.abs(ymax-ymin-eps)))-1)); //rounded 10-base
+  let vstep = Math.max(1,Math.pow(10, Math.ceil(Math.log10((Math.abs(ymax-ymin-eps)))-1))); //rounded 10-base
   const vmin = Math.floor(ymin/vstep)*vstep; //bottom, src units
   const vmax = Math.ceil(ymax/vstep)*vstep;  //top, src units
-  let ysteps = Math.ceil((vmax*10-vmin*10)/vstep/10); //Y label and grid count, 10 max, extra digit for float error correction
+  let ysteps = Math.max(1, Math.ceil((vmax*10-vmin*10)/vstep/10)); //Y label and grid count, 10 max, extra digit for float error correction
   if (ysteps>a.yticks) {
     while (ysteps>Math.ceil(a.yticks/2)) {
       if (ysteps%3==0) { ysteps /= 3; } else { ysteps /= 2; }
@@ -75,8 +79,9 @@ function svg_line_graph(args) {
     }
   }
   vstep = (vmax-vmin)/ysteps;
+  if (isNaN(vstep)) vstep = 1;
   const ystep  = yheight/ysteps; //grid height
-  const ydigits = Math.max(0, Math.ceil(-Math.log10(vstep)));
+  const ydigits = vstep==0 ? 0 : Math.max(0, Math.ceil(-Math.log10(vstep)));
   const xfactor = xwidth/(xcount-1);
   const yfactor = -yheight/(vmax-vmin); //inverse coordinate system
   const xzero = xL; //Y-axis always on left
