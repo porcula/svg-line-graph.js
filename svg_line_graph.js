@@ -3,7 +3,7 @@ function svg_line_graph(args) {
   svg.graph .xaxis path {stroke:#000; stroke-width:1; shape-rendering:geometricPrecision; }\
   svg.graph .yaxis path {stroke:#000; stroke-width:1; shape-rendering:geometricPrecision; }\
   svg.graph .xaxis text { fill:#000; text-anchor:middle; dominant-baseline:hanging; }\
-  svg.graph .yaxis text { fill:#000; text-anchor:end; dominant-baseline:central; }\
+  svg.graph .yaxis text { fill:#000; text-anchor:end; dominant-baseline:alphabetic; }\
   svg.graph path.line { fill:transparent; stroke-width:3; shape-rendering:geometricPrecision; }\
   svg.graph .line.highlight { stroke-width:5; }\
   svg.graph .line.shadow { stroke-opacity:0.1; marker:none; }\
