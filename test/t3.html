@@ -1,7 +1,7 @@
 <!doctype html>
 <style>
-svg {border:1px solid red; font-family: Arial; font-size: 10pt; }
-.graph-container { width: 800px; height:200px; border:2px solid green; }
+svg { font-family: Arial; font-size: 10pt; }
+.graph-container { width: 800px; height:200px; border:2px solid #777; }
 #hint { background-color:yellow; height:20px; }
 tspan.bold { font-weight:bold; fill:#055; color:#800; }
 title { font-size:12pt; background-color:#ff0; }
@@ -14,7 +14,7 @@ title { font-size:12pt; background-color:#ff0; }
 <script>
   
 const series = [
-    {name:'foo', values:[1,2,3,5,3,0,null,null,null,null,null]},
+    {name:'foo', values:[1,2,3,5,3,0,null,null,null,null,null,null,null,null,null,null,null]},
     {name:'bar', values:[0,5,8,9,8,4,2,2,1,undefined,undefined,7,8]},
     {name:'очень-очень длинное имя', values:[5.1,5.2,5.1,5.2,5.0,5.2] },
     {name:'фыва', values:[50,25,25,50,50,100,75,75,50,0,100,100,100]},
@@ -35,7 +35,7 @@ document.getElementById('graph0').innerHTML = svg_line_graph({
     xlabels:['00:00','04:00','08:00','12:00','16:00'], 
     yticks: 20,
     margins:[10,10,20,50],
-    legend: {x:550,y:0,w:120,h:20, vertical: true, grow: true},
+    legend: {w:120,h:20, anchor:'r',x:10,y:0, vertical: true, grow: true},
     marker: 1,
     unit: '%',
   });

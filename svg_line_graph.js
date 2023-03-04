@@ -38,7 +38,7 @@ function svg_line_graph(args) {
     custom: "",
     colors: ['#f00','#0d0','#44f', '#dd0','#0dd','#f4f', '#800','#080','#008', '#880','#088','#808'],
   };
-  const def_legend = { x:50, y:0, w:100, h:20, vertical:false, grow:false };
+  const def_legend = { x:50, y:0, w:100, h:20, vertical:false, grow:false, anchor:'tl' };
   const a = {...defaults, ...args};
   if (a.legend!=undefined) a.legend = {...def_legend, ...a.legend};
   const xL = a.margins[3], xR = a.width-a.margins[1], yT = a.margins[0], yB = a.height-a.margins[2];
@@ -225,11 +225,10 @@ function svg_line_graph(args) {
       mx = Math.max(mx, x); 
       my = Math.max(my, y); 
     }
-    const [lw, lh] = a.legend.vertical 
-      ? [ mx+w, my+h*1.7 ]
-      : [ mx+w+h*1.0, my+h*1.7 ];
-    let [ox,oy] = [x0,y0];
-    //if (a.legend.grow && ((x0+lw+h)>a.width)) ox = a.width-lw-h;
+    const [lw,lh] = a.legend.vertical ? [ mx+w, my+h*1.7 ] : [ mx+w+h*1.0, my+h*1.7 ];
+    const la = a.legend.anchor;
+    const ox = la=='t'||la=='b' ? (a.width-lw)/2+x0: la.endsWith('r') ? a.width-lw-x0 : x0; //left=default
+    const oy = la=='l'||la=='r' ? (a.height-lh)/2+y0: la.startsWith('b') ? a.height-lh-y0 : y0; //top=default
     svg += `<g class="legend" transform="translate(${ox},${oy})"><rect class="legend background" x="0" y="0" width="${lw}" height="${lh}" rx="${h*0.2}"/>${legend}</g>`;
     svg += `<rect class="legend toggle" x="${a.width-h}" y="0" width="${h}" height="${h}" onclick="this.parentElement.querySelector('.legend').classList.toggle('hidden')"/>\n`;
   }

@@ -56,12 +56,13 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | xlabels     | | Array[String/Number] | []            | подписи оси X включая начало и конец диапазона, задают вертикальную сетку
 | margins     | | Array[Number]   | [40,10,20,50]      | отступы [сверху - легенда, справа, снизу - подписи оси X, слева - подписи оси Y]
 | legend      | | Object{}        | undefined          | положение и размеры легенды, undefined=не отображать
-|  | x        |   Number          | 50                 | отступ слева
-|  | y        |   Number          | 0                  | отступ сверху
 |  | w        |   Number          | 100                | ширина элемента
 |  | h        |   Number          | 20                 | высота элемента, неявно определяет все остальные размеры
 |  | vertical |   Bool            | false              | вертикальное расположение элементов
 |  | grow     |   Bool            | false              | автоматическое увеличение числа строк/столбцов
+|  | anchor   |   String          | 'tl'               | приязка к краям: tl|t|tr|l|r|bl|b|br
+|  | x        |   Number          | 50                 | смещение по горизонтали
+|  | y        |   Number          | 0                  | смещение по вертикали
 | marker      | | Number/String   | undefined          | маркер точек по умолчанию, аналогично series[].marker
 | custom      | | String          | ""                 | произвольный текст вставляемый в начало SVG: элементы SVG, скрипты, стили
 | hint        | | Object{String:*}| undefined          | подсказка для точки графика, см. ниже

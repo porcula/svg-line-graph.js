@@ -24,7 +24,7 @@ document.getElementById('graph0').innerHTML = svg_line_graph({
     xlabels: ['Янв','Фев','Мар','Апр','Май'], // последняя отметка смещена за пределы графика
     yticks: 5,
     margins: [25,25,60,0],
-    legend: { x:500,y:0,w:210,h:40,vertical:false },
+    legend: {w:210,h:40, anchor:'tr',x:10,y:10, vertical: false, grow: false},
     hint: {'dynamic':'show_hint'},
     hint_r: 10,
     unit: '%',
