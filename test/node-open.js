@@ -1,3 +1,2 @@
 #!/usr/bin/env node
-const open = require('open');
-open(process.argv[2]);
+import('open').then( open => open.default(process.argv[2]) );

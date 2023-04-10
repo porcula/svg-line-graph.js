@@ -207,7 +207,7 @@ function svg_line_graph(args) {
       } else {
         legend += `<path class="legend series${si} marker" marker-start="url(#${markerids[si]})" d="M${x+cx},${y+dy}"/>`;
       }
-      legend += `<text class="legend series${si} text" x="${x+tx}" y="${y+dy}"><title>${s.name}</title>${s.name}</text>`;
+      legend += `<text class="legend series${si} text" x="${x+tx}" y="${y+dy}"><title>${s.name_long||s.name||''}</title>${s.name||''}</text>`;
       legend += '</g>';
       if (si<last_si) {
         if (a.legend.vertical) {

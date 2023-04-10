@@ -1,6 +1,6 @@
 SHELL=sh
 
-default: svg_line_graph.mod.js svg_line_graph.min.js
+default: svg_line_graph.mod.js svg_line_graph.min.js check
 
 install-node-modules:
 	npm install uglify-js node-static open
@@ -10,7 +10,7 @@ check:
 
 svg_line_graph.min.js: svg_line_graph.js
 	node --check $<
-	uglifyjs $< -o $@
+	npx uglifyjs $< -o $@
 
 svg_line_graph.mod.js: svg_line_graph.js
 	node --check $<
@@ -28,6 +28,6 @@ test: check
 	node test/node-open.js test/t3.html
 	node test/node-open.js test/t4.html
 
-test-module: svg_line_graph.mod.js
-	static -p 8080 &
+test-module: svg_line_graph.mod.js check
+	npx static -p 8080 &
 	node test/node-open.js http://127.0.0.1:8080/test/t0-module.html

@@ -44,6 +44,7 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | **series**  | | Array[Object]   |                    | данные и метаданные рядов (линий)
 | | values    |   [Number]        |                    | значения по оси Y, значения null и undefined не рисуются
 | | name      |   String          | ""                 | подпись ряда в легенде
+| | name_long |   String          | ""                 | детальное описание ряда в легенде
 | | color     |   String          | набор из 12 цветов | цвет линии: имя / #hex / rgb() / rgba()
 | | marker    |   Number/String   | undefined          | маркер точки: относительный радиус окружности или идентификатор пользовательского маркера определёного в custom defs
 | id          | | String          | 'svg_line_graph'   | идентификатор генерируемого элемента SVG
