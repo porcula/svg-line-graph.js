@@ -47,6 +47,7 @@ document.getElementById('graph-container').innerHTML = svg_line_graph({
 | | name_long |   String          | ""                 | детальное описание ряда в легенде
 | | color     |   String          | набор из 12 цветов | цвет линии: имя / #hex / rgb() / rgba()
 | | marker    |   Number/String   | undefined          | маркер точки: относительный радиус окружности или идентификатор пользовательского маркера определёного в custom defs
+| | zero_tear |   Bool            | undefined          | отрисовка вертикальных линий до нуля при разрыве в последовательности значений
 | id          | | String          | 'svg_line_graph'   | идентификатор генерируемого элемента SVG
 | width       | | Number          | 800                | относительная ширина графика с отступами
 | height      | | Number          | 400                | относительная высота графика с отступами

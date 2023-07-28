@@ -38,7 +38,7 @@ export function svg_line_graph(args) {
     custom: "",
     colors: ['#f00','#0d0','#44f', '#dd0','#0dd','#f4f', '#800','#080','#008', '#880','#088','#808'],
   };
-  const def_legend = { x:50, y:0, w:100, h:20, vertical:false, grow:false, anchor:'tl' };
+  const def_legend = { x:50, y:0, w:100, h:20, vertical:false, grow:false, hidden:false, anchor:'tl' };
   const a = {...defaults, ...args};
   if (a.legend!=undefined) a.legend = {...def_legend, ...a.legend};
   const xL = a.margins[3], xR = a.width-a.margins[1], yT = a.margins[0], yB = a.height-a.margins[2];
@@ -156,6 +156,7 @@ export function svg_line_graph(args) {
     let path = '', mark = '', hint = '';
     // line
     let prev_def = false;
+    let prev_x = undefined;
     for (const [vi,v] of s.values.entries()) {
       const def = !isNaN(v) && v!=null;
       if (def) {
@@ -163,9 +164,12 @@ export function svg_line_graph(args) {
         const y = rnd(yzero+v*yfactor);
         if (prev_def) {
           path += `L ${x},${y} `;
+        } else if (s.zero_tear) { 
+          path += `M ${x},${yzero} L ${x},${y}`;
         } else {
           path += `M ${x},${y} `;
         }
+        prev_x = x;
         if (a.hint) {
           let attr = '', title = '';
           for(const [mode,fn] of Object.entries(a.hint)) {
@@ -180,6 +184,8 @@ export function svg_line_graph(args) {
           }
           hint += `<circle cx="${x}" cy="${y}" r="${hint_r}"${attr}>${title}</circle>`;
         }
+      } else if (prev_def && s.zero_tear) {
+        path += `L ${prev_x},${yzero} `;
       }
       prev_def = def;
     }
@@ -207,7 +213,7 @@ export function svg_line_graph(args) {
       } else {
         legend += `<path class="legend series${si} marker" marker-start="url(#${markerids[si]})" d="M${x+cx},${y+dy}"/>`;
       }
-      legend += `<text class="legend series${si} text" x="${x+tx}" y="${y+dy}"><title>${s.name_long||s.name||''}</title>${s.name||''}</text>`;
+      legend += `<text class="legend series${si} text" x="${x+tx}" y="${y+dy}"><title>${s.name_long||s.name}</title>${s.name}</text>`;
       legend += '</g>';
       if (si<last_si) {
         if (a.legend.vertical) {
@@ -229,7 +235,8 @@ export function svg_line_graph(args) {
     const la = a.legend.anchor;
     const ox = la=='t'||la=='b' ? (a.width-lw)/2+x0: la.endsWith('r') ? a.width-lw-x0 : x0; //left=default
     const oy = la=='l'||la=='r' ? (a.height-lh)/2+y0: la.startsWith('b') ? a.height-lh-y0 : y0; //top=default
-    svg += `<g class="legend" transform="translate(${ox},${oy})"><rect class="legend background" x="0" y="0" width="${lw}" height="${lh}" rx="${h*0.2}"/>${legend}</g>`;
+    const hidden = a.legend.hidden ? 'hidden' : '';
+    svg += `<g class="legend ${hidden}" transform="translate(${ox},${oy})"><rect class="legend background" x="0" y="0" width="${lw}" height="${lh}" rx="${h*0.2}"/>${legend}</g>`;
     svg += `<rect class="legend toggle" x="${a.width-h}" y="0" width="${h}" height="${h}" onclick="this.parentElement.querySelector('.legend').classList.toggle('hidden')"/>\n`;
   }
   svg += '</svg>';

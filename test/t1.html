@@ -26,7 +26,7 @@ const gr = [
 
 for (const [i,v] of gr.entries()) {
   const series = [
-    {name:'foo', color:'#00f', values:v},
+    {name:'foo', color:'#00f', values:v, zero_tear:true},
   ];
   const div = document.getElementById('graph'+i);
   div.innerHTML = svg_line_graph({
