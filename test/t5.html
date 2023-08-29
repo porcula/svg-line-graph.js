@@ -1,0 +1,54 @@
+<!doctype html>
+<style>
+svg { font-family: Arial; font-size: 10pt; }
+.graph-container { width: 800px; height:200px; border:2px solid #777; }
+</style>
+
+<h1>autoscale test</h1>
+<div id="graph" class="graph-container"></div>
+yticks=<input id="yticks" type="number"></span>
+scale=<input id="scale" type="number"></span>
+max=<span id="max"></span>
+<script src="../svg_line_graph.js"></script>
+<script>
+
+let timer = undefined;
+let yticks = 10;
+let scale = 0.09;
+let values = [50,25,25,50,50,100,75,75,50,0,100,100,100];
+let graph_e = document.getElementById('graph');
+let yticks_e = document.getElementById('yticks');
+let scale_e = document.getElementById('scale');
+let max_e = document.getElementById('max');
+const max = arr => arr.filter(i => !isNaN(i) && i!=null).reduce((a,b) => Math.max(a,b), -Infinity);
+function render(p_yticks,p_scale) {
+  yticks = yticks_e.value = p_yticks;
+  scale = scale_e.value = p_scale;
+  let v = values.map(y=>Math.floor(y*scale)/10);
+  let vmax = max(v);
+  max_e.textContent = vmax;
+  graph_e.innerHTML = svg_line_graph({
+      width:800, height:200,
+      series: [ {name:'test', values:v} ], 
+      yticks: yticks,
+    });
+}
+render(yticks,scale);
+yticks_e.addEventListener('input', ()=> render(yticks_e.value, scale));
+scale_e.addEventListener('input', ()=> render(yticks, scale_e.value));
+document.addEventListener('keydown', (e) => {
+  if (e.code=='Enter') { render(yticks,scale); }
+  else if (e.code=='Space') {
+    if (timer==undefined) { timer = setInterval(()=>{ render(yticks,scale*1.1); }, 500); }
+    else { clearInterval(timer); timer=undefined; }
+  }
+  else if (e.code=='PageUp') {
+    clearInterval(timer);
+    render(yticks, scale*1.1);
+  }
+  else if (e.code=='PageDown') {
+    clearInterval(timer);
+    render(yticks, scale/1.1);
+  }
+});
+</script>
