@@ -1,0 +1,34 @@
+<!doctype html>
+<style>
+.graph-container { width: 800px; height:150px; border:2px solid #777; font-family: Arial; font-size: 10pt; }
+</style>
+
+<div id="graph0" class="graph-container"></div>
+<div id="graph1" class="graph-container"></div>
+<div id="graph2" class="graph-container"></div>
+
+<script src="../svg_line_graph.js"></script>
+<script>
+
+const GAPS = ['skip', 'zero', 'ignore'];
+
+
+for (const i in GAPS) {
+  let gaps = GAPS[i];
+  const series = [
+    {name:`gaps=${gaps}`, color:'#00f', values:[5.1,5.2,5.1,undefined,5.2,null,5.0,5.2]},
+  ];
+  const div = document.getElementById('graph'+i);
+  div.innerHTML = svg_line_graph({
+    width: div.clientWidth, height: div.clientHeight,
+    yticks: 5,
+    series:series, 
+    xlabels:['00:00','04:00','08:00','12:00','16:00'], 
+    marker:1,
+    margins:[15,20,15,50],
+    gaps: gaps,
+    legend: {w:120,h:20, anchor:'t'},
+  });
+}
+
+</script>

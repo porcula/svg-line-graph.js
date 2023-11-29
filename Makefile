@@ -27,6 +27,8 @@ test: check
 	node test/node-open.js test/t2.html
 	node test/node-open.js test/t3.html
 	node test/node-open.js test/t4.html
+	node test/node-open.js test/t5.html
+	node test/node-open.js test/t6.html
 
 test-module: svg_line_graph.mod.js check
 	npx static -p 8080 &
