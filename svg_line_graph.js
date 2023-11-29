@@ -214,7 +214,7 @@ function svg_line_graph(args) {
     const last_si = a.series.length-1;
     for (const [si,s] of a.series.entries()) {
       const jscode = `if (event) event.stopPropagation();\
- document.querySelectorAll('#${a.id} .series${si}').forEach((i)=>{\
+ this.closest('svg').querySelectorAll('#${a.id} .series${si}').forEach((i)=>{\
  const c = i.classList; c.replace('normal','highlight')||c.replace('highlight','shadow')||c.replace('shadow','normal');\
 })`;
       legend += `<g class="legend series${si} item normal" clip-path="polygon(${-cx} 0, ${w-cx} 0, ${w-cx} ${h}, ${-cx} ${h})" onclick="${jscode}">`;

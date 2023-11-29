@@ -20,7 +20,7 @@ export function svg_line_graph(args) {
   svg.graph .legend.hidden { display:none; }\
   svg.graph .legend.toggle { fill:rgba(0,0,0,0.05); stroke:transparent; }\
   ';
-  
+
   const defaults = {
     id: "svg_line_graph",
     width: 800,
@@ -32,9 +32,12 @@ export function svg_line_graph(args) {
     yticks: 10,
     yunit: '',
     xlabels: [],
+    xl_offset: 4,
+    yl_offset: -2,
     marker: undefined,
     hint: undefined,
     hint_r: undefined, //calculated
+    gaps: 'skip',
     custom: "",
     colors: ['#f00','#0d0','#44f', '#dd0','#0dd','#f4f', '#800','#080','#008', '#880','#088','#808'],
   };
@@ -69,26 +72,30 @@ export function svg_line_graph(args) {
   const vmin = Math.floor(ymin/vstep)*vstep; //bottom, src units
   const vmax = Math.ceil(ymax/vstep)*vstep;  //top, src units
   let ysteps = Math.max(1, Math.ceil((vmax*10-vmin*10)/vstep/10)); //Y label and grid count, 10 max, extra digit for float error correction
+  if (ysteps<a.yticks) ysteps *= a.yticks;
   if (ysteps>a.yticks) {
-    while (ysteps>Math.ceil(a.yticks/2)) {
-      if (ysteps%3==0) { ysteps /= 3; } else { ysteps /= 2; }
-    }
-  } else {
-    while (ysteps<=Math.ceil(a.yticks/2)) {
-      ysteps *= 2;
+    let n = ysteps;
+    ysteps = 0;
+    for (let d=2; d<a.yticks; d++) {
+      if (n%d==0) { 
+        let s = n/d;
+        if (s<=a.yticks && s>ysteps) ysteps = s;
+      }
     }
   }
+  if (ysteps==0) ysteps = Math.pow(2, Math.floor(Math.log2(a.yticks)));
   vstep = (vmax-vmin)/ysteps;
   if (isNaN(vstep)) vstep = 1;
   const ystep  = yheight/ysteps; //grid height
-  const ydigits = vstep==0 ? 0 : Math.max(0, Math.ceil(-Math.log10(vstep)));
+  const ydigits = vstep==0 ? 0 : ysteps<10 ? 1 : Math.max(0, Math.ceil(-Math.log10(vstep)));
   const xfactor = xwidth/(xcount-1);
   const yfactor = -yheight/(vmax-vmin); //inverse coordinate system
   const xzero = xL; //Y-axis always on left
   const yzero = (yB-yT)*vmax/(vmax-vmin) + yT;  //can be out of view
   const yaxis = (vmin<=0 && vmax>=0) ? yzero : undefined;  //draw X-axis at Y=0
   const hint_r = a.hint_r ?? Math.max(3,Math.ceil(Math.min(xwidth,yheight)*0.02)); //invisible circle radius
-  const yformat = new Intl.NumberFormat(undefined,{maximumFractionDigits:ydigits}); //current locale for decimal/thousands separator
+  const yfmt = new Intl.NumberFormat(undefined,{maximumFractionDigits:ydigits}); //current locale for decimal/thousands separator
+  const yformat = a.yformat ?? yfmt.format;
   const rnd = (x) => +x.toFixed(3); //shorter SVG, less precision
   let style = default_style;
   let defs = '';
@@ -133,7 +140,7 @@ export function svg_line_graph(args) {
   for (let i=0; i<=ysteps; i+=1) {
     const y = rnd(yB-ystep*i);
     const v = (vmax-vmin)/ysteps*i+vmin;
-    svg += `<text x="${xL-2}" y="${y}" >${yformat.format(v)}${suffix}</text>`;
+    svg += `<text x="${xL+a.yl_offset}" y="${y}" >${yformat(v)}${suffix}</text>`;
   }
   svg += '</g>\n';
   // xaxis
@@ -144,7 +151,7 @@ export function svg_line_graph(args) {
   // xaxis labels
   for (const [i,label] of a.xlabels.entries()) {
     const x = rnd(xL+xstep*i);
-    svg += `<text x="${x}" y="${yB+4}" >${label}</text>`;
+    svg += `<text x="${x}" y="${yB+a.xl_offset}" >${label}</text>`;
   }
   svg += '</g>\n';
 
@@ -153,6 +160,7 @@ export function svg_line_graph(args) {
   for (let si=a.series.length-1; si>=0; si--) { //reverse draw order
     const s = a.series[si];
     if (s.values.length==0) continue;
+    let gaps = s.gaps||a.gaps;
     let path = '', mark = '', hint = '';
     // line
     let prev_def = false;
@@ -163,11 +171,13 @@ export function svg_line_graph(args) {
         const x = rnd(xzero+vi*xfactor);
         const y = rnd(yzero+v*yfactor);
         if (prev_def) {
-          path += `L ${x},${y} `;
-        } else if (s.zero_tear) { 
-          path += `M ${x},${yzero} L ${x},${y}`;
+          path += `L${x},${y} `;
+        } else if (gaps=='ignore') {
+          path += prev_x==undefined ? `M${x},${y} ` : `L${x},${y} `;
+        } else if (gaps=='zero') { 
+          path += `M${x},${yzero} L${x},${y}`;
         } else {
-          path += `M ${x},${y} `;
+          path += `M${x},${y} `;
         }
         prev_x = x;
         if (a.hint) {
@@ -184,7 +194,7 @@ export function svg_line_graph(args) {
           }
           hint += `<circle cx="${x}" cy="${y}" r="${hint_r}"${attr}>${title}</circle>`;
         }
-      } else if (prev_def && s.zero_tear) {
+      } else if (prev_def && gaps=='zero') {
         path += `L ${prev_x},${yzero} `;
       }
       prev_def = def;
@@ -203,8 +213,8 @@ export function svg_line_graph(args) {
     const limx = xR-h*1.0-x0, limy = yB-h*1.7-y0;
     const last_si = a.series.length-1;
     for (const [si,s] of a.series.entries()) {
-      const jscode = `event.stopPropagation();\
- document.querySelectorAll('#${a.id} .series${si}').forEach((i)=>{\
+      const jscode = `if (event) event.stopPropagation();\
+ this.closest('svg').querySelectorAll('#${a.id} .series${si}').forEach((i)=>{\
  const c = i.classList; c.replace('normal','highlight')||c.replace('highlight','shadow')||c.replace('shadow','normal');\
 })`;
       legend += `<g class="legend series${si} item normal" clip-path="polygon(${-cx} 0, ${w-cx} 0, ${w-cx} ${h}, ${-cx} ${h})" onclick="${jscode}">`;
