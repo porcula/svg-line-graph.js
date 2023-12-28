@@ -1,4 +1,5 @@
-export function svg_line_graph(args) {
+export /* exported svg_line_graph */ 
+function svg_line_graph(args) {
   const default_style = 'svg.graph .grid { stroke:#ddd; stroke-width:1; shape-rendering:geometricPrecision; }\
   svg.graph .xaxis path {stroke:#000; stroke-width:1; shape-rendering:geometricPrecision; }\
   svg.graph .yaxis path {stroke:#000; stroke-width:1; shape-rendering:geometricPrecision; }\
@@ -161,7 +162,7 @@ export function svg_line_graph(args) {
     const s = a.series[si];
     if (s.values.length==0) continue;
     let gaps = s.gaps||a.gaps;
-    let path = '', mark = '', hint = '';
+    let path = '', hint = '';
     // line
     let prev_def = false;
     let prev_x = undefined;

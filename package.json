@@ -1,0 +1,25 @@
+{
+  "name": "svg-line-graph",
+  "version": "1.0.0",
+  "description": "simple diagram",
+  "main": "svg_line_graph.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "define-lazy-prop": "^2.0.0",
+    "is-docker": "^2.2.1",
+    "is-wsl": "^2.2.0",
+    "node-static": "^0.7.11",
+    "open": "^8.4.2",
+    "uglify-js": "^3.17.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0"
+}

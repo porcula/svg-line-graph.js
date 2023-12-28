@@ -1,12 +1,15 @@
 SHELL=sh
 
-default: svg_line_graph.mod.js svg_line_graph.min.js check
+default: lint svg_line_graph.mod.js svg_line_graph.min.js check
 
 install-node-modules:
-	npm install uglify-js node-static open
+	npm install uglify-js node-static open eslint
 
 check:
 	node --check *.js
+
+lint:
+	npx eslint svg_line_graph.js
 
 svg_line_graph.min.js: svg_line_graph.js
 	node --check $<
